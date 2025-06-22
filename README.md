@@ -85,5 +85,146 @@ GET <key_val>
 
 </details>
 
+
+<details>
+<summary> Week 2</summary>
+
+## Week 2: Deploying Redis and SnipBalancer on Kubernetes
+
+### 1. Create a Kubernetes Cluster with Kind
+
+```bash
+kind create cluster --name redis --image kindest/node:v1.23.5
+```
+
+### 2. Create a Namespace for Redis
+
+```bash
+kubectl create ns redis
+```
+
+### 3. Deploy Redis Cluster
+
+Navigate to the `redis/kubernetes/` directory and apply the configuration files:
+
+```bash
+kubectl apply -n redis -f ./redis/redis-configmap.yaml
+kubectl apply -n redis -f ./redis/redis-statefulset.yaml
+```
+
+Check the status of pods and persistent volumes:
+
+```bash
+kubectl -n redis get pods
+kubectl -n redis get pv
+```
+
+### 4. Verify Redis Cluster
+
+Access the Redis pod shell:
+
+```bash
+kubectl -n redis exec -it redis-0 -- sh
+```
+
+Connect to Redis CLI and check replication status:
+
+```bash
+redis-cli
+auth <your-redis-password>
+info replication
+```
+
+View logs for Redis pods:
+
+```bash
+kubectl -n redis logs redis-0
+kubectl -n redis logs redis-1
+kubectl -n redis logs redis-2
+```
+
+### 5. Deploy Redis Sentinel
+
+Apply the Sentinel StatefulSet:
+
+```bash
+kubectl apply -n redis -f ./sentinel/sentinel-statefulset.yaml
+```
+
+Check Sentinel pods and logs:
+
+```bash
+kubectl -n redis get pods
+kubectl -n redis get pv
+kubectl -n redis logs sentinel-0
+```
+
+### 6. Deploy SnipBalancer Application
+
+Navigate to the `/redis/kubernetes/app/` directory and deploy the application:
+
+```bash
+kubectl apply -n redis -f app-deployment.yaml
+```
+
+### 7. Verify Application Deployment
+
+Check if the SnipBalancer pods are running:
+
+```bash
+kubectl get pods -n redis -l app=snipbal
+```
+
+Check deployment and service status:
+
+```bash
+kubectl get deployment -n redis snipbal
+kubectl get service -n redis snipbal
+```
+
+### 8. Access the Application
+
+Port-forward the SnipBalancer service to your local machine:
+
+```bash
+kubectl port-forward -n redis service/snipbal 5000:5000
+```
+
+### 9. Debugging and Logs
+
+Get the names of SnipBalancer pods:
+
+```bash
+kubectl get pods -n redis -l app=snipbal
+```
+
+Check logs for a specific pod:
+
+```bash
+kubectl logs -n redis <pod-name>
+```
+
+### 10. Interact with Redis
+
+Access the Redis CLI from a pod:
+
+```bash
+kubectl exec -it -n redis redis-0 -- redis-cli
+```
+
+Authenticate and interact with Redis:
+
+```bash
+auth <your-redis-password>
+KEYS *
+GET <key_name>
+```
+
+## Notes
+
+- Replace `<password>` and `<key_val>` with your password and desired Redis key.
+
+</details>
+
 > **Reference:**  
 > This project setup was taken from [this guide](https://github.com/marcel-dempers/docker-development-youtube-series/blob/master/python/introduction/part-5.database.redis/README.md).
