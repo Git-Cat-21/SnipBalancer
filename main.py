@@ -20,7 +20,7 @@ for s in redis_sentinels.split(","):
 redis_sentinel = Sentinel(sentinels, socket_timeout=5,port=5000)
 redis_master = redis_sentinel.master_for(redis_master_name,password = redis_password, socket_timeout=5)
 
-
+print(sentinels)
 def redis_command(command, *args):
   max_retries = 3
   count = 0
