@@ -220,6 +220,36 @@ KEYS *
 GET <key_name>
 ```
 
+### 11. Testing Failover and High Availability
+
+To verify Redis Sentinel failover and cluster availability:
+
+1. **Check Current Redis Master:**
+    ```bash
+    kubectl exec -n redis sentinel-0 -- redis-cli -p 5000 SENTINEL get-master-addr-by-name mymaster
+    ```
+
+2. **Simulate Master Failure:**
+    ```bash
+    kubectl delete pod -n redis redis-0
+    ```
+
+3. **Monitor Sentinel Logs for Failover Events:**
+    ```bash
+    kubectl logs -f -n redis sentinel-0
+    ```
+
+4. **Check Pod Status and Master Re-election:**
+    ```bash
+    kubectl -n redis get pods -o wide
+    ```
+
+5. **Verify New Master:**
+    - Repeat step 1 to confirm which Redis pod is now the master.
+    - You can also refer to step 4 above to check the roles of `redis-0`, `redis-1`, and `redis-2`.
+
+> These steps help ensure your Redis cluster remains available and automatically recovers from node failures.
+
 ## Notes
 
 - Replace `<password>` and `<key_val>` with your password and desired Redis key.
