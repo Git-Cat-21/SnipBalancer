@@ -26,11 +26,20 @@ spec:
         - containerPort: 5000
         env:
         - name: REDIS_SENTINELS
-          value: "sentinel-0.sentinel.redis.svc.cluster.local:5000,sentinel-1.sentinel.redis.svc.cluster.local:5000,sentinel-2.sentinel.redis.svc.cluster.local:5000"
+          valueFrom:
+            configMapKeyRef:
+              name: snipbal-config
+              key: REDIS_SENTINELS
         - name: REDIS_MASTER_NAME
-          value: "mymaster"
+          valueFrom: 
+              configMapKeyRef: 
+                name: snipbal-config
+                key: REDIS_MASTER_NAME
         - name: REDIS_PASSWORD
-          value: "okok"
+          valueFrom: 
+            secretKeyRef:
+              name: snipbal-secret
+              key: REDIS_PASSWORD
         resources:
           requests:
             memory: "64Mi"

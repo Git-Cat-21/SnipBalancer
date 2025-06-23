@@ -4,7 +4,10 @@ A Load-Balanced URL Shortener
 
 ---
 <details>
-<summary>Week1</summary>
+<summary>Week 1</summary>
+
+## Week 1: To Build the URL Shortener in Docker
+
 
 ## 1. Set Up a Python Virtual Environment
 
@@ -89,7 +92,7 @@ GET <key_val>
 <details>
 <summary> Week 2</summary>
 
-## Week 2: Deploying Redis and SnipBalancer on Kubernetes
+## Week 2: Deploy the URL Shortener using Kubernetes
 
 ### 1. Create a Kubernetes Cluster with Kind
 
@@ -165,6 +168,8 @@ Navigate to the `/redis/kubernetes/app/` directory and deploy the application:
 
 ```bash
 kubectl apply -n redis -f app-deployment.yaml
+kubectl apply -n redis -f app-configmap.yaml
+kubectl apply -n redis -f app-secret.yaml
 ```
 
 ### 7. Verify Application Deployment
