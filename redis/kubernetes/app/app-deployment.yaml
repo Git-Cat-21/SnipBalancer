@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: snipbal
+  namespace: redis
+spec:
+  selector:
+    matchLabels:
+      app: snipbal
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: snipbal
+    spec:
+      containers:
+      - name: snipbal 
+        image: gitcat21/snipbal:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        env:
+        - name: REDIS_SENTINELS
+          valueFrom:
+            configMapKeyRef:
+              name: snipbal-config
+              key: REDIS_SENTINELS
+        - name: REDIS_MASTER_NAME
+          valueFrom: 
+              configMapKeyRef: 
+                name: snipbal-config
+                key: REDIS_MASTER_NAME
+        - name: REDIS_PASSWORD
+          valueFrom: 
+            secretKeyRef:
+              name: snipbal-secret
+              key: REDIS_PASSWORD
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "10m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: snipbal
+  namespace: redis
+spec:
+  selector:
+    app: snipbal
+  ports:
+  - port: 5000
+    targetPort: 5000
+  type: LoadBalancer
