@@ -313,6 +313,48 @@ Observe as the HPA scales the number of SnipBalancer pods up and down in respons
 > **Note:** The cooldown period is a standard HPA property and may vary based on your configuration.
 
 
+## Stress Testing
+
+To perform stress testing on the SnipBalancer application, follow these steps:
+
+1. **Navigate to the `stress-tests` directory:**
+    ```bash
+    cd stress-tests
+    ```
+
+2. **Make the test scripts executable:**
+    ```bash
+    chmod +x get-test.sh
+    chmod +x post-test.sh
+    ```
+
+3. **Run the Application and Start Stress Tests**
+
+```bash
+kubectl port-forward -n redis service/snipbal 5000:5000
+```
+
+Then, in a separate terminal, run a stress test:
+
+```bash
+# For GET requests:
+./get-test.sh
+
+# Or for POST requests:
+./post-test.sh
+```
+
+4. **Monitor Scaling Activity in Real Time**
+
+Open another terminal and watch the scaling behavior:
+
+```bash
+kubectl get pods -n redis --watch
+kubectl get hpa -n redis --watch
+```
+
+These steps will help you observe how the application automatically scales up and down in response to increased load.
+
 </details>
 
 > **Reference:**  
