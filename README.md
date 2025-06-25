@@ -261,5 +261,59 @@ To verify Redis Sentinel failover and cluster availability:
 
 </details>
 
+
+<details>
+<summary>Week 3 </summary>
+
+## Week 3: Scaling, Load Balancing & Monitoring
+
+### 1. Enable Horizontal Pod Autoscaling (HPA)
+
+Navigate to the `/redis/kubernetes/app` directory and apply the HPA configuration:
+
+```bash
+kubectl apply -f app-hpa.yaml -n redis
+```
+
+### 2. Deploy Metrics Server
+
+Navigate to the `/redis/kubernetes/metric-server` directory and deploy the metrics server:
+
+```bash
+kubectl apply -f components.yaml -n redis
+```
+
+### 3. Generate Load for Autoscaling
+
+Start a temporary load generator pod:
+
+```bash
+kubectl run -n redis -it --rm load-generator --image=busybox -- /bin/sh
+```
+
+Inside the `load-generator` pod shell, run the following command to continuously send requests to the SnipBalancer service:
+
+```bash
+while true; do wget -q -O- http://snipbal:5000; done
+```
+
+You can exit the load generator at any time by pressing `Ctrl + C`.
+
+### 4. Monitor Autoscaling Activity
+
+In separate terminals, monitor the status of pods and the HPA:
+
+```bash
+kubectl get pods -n redis --watch
+kubectl get hpa -n redis --watch
+```
+
+Observe as the HPA scales the number of SnipBalancer pods up and down in response to the generated load. After stopping the load generator, the number of replicas will decrease following the HPA cooldown period (typically 10–15 minutes).
+
+> **Note:** The cooldown period is a standard HPA property and may vary based on your configuration.
+
+
+</details>
+
 > **Reference:**  
 > This project setup was taken from [this guide](https://github.com/marcel-dempers/docker-development-youtube-series/blob/master/python/introduction/part-5.database.redis/README.md).
